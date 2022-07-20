@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Pr = sequelize.define("pr", {
+  const UserData = sequelize.define("userdata", {
     title: {
       type: Sequelize.STRING,
     },
@@ -10,5 +10,5 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
     },
   });
-  return Pr;
+  return UserData;
 };
