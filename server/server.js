@@ -1,24 +1,30 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const { create } = require('./controllers/pr.controller');
+// var corsOption = {
+//     origin : 'localhost:3000'
+// };
+const UserData = require('./models/pr.model');
 
-var corsOption = {
-    origin : 'localhost:8081'
-};
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
-app.use(cors(corsOption));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}));
 
-const db = require('./models')
 
-db.sequelize.sync()
+
 
 app.get('/', (req,res)=>{
     res.json({message : 'yooooooooooooooo'})
 })
 
+app.post('/create',UserData.create)
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
