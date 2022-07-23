@@ -1,0 +1,1 @@
+INSERT INTO userdata (UserId, UserPassword, EmailId) VALUES (1, md5('john123'), 'jphnstupidass');

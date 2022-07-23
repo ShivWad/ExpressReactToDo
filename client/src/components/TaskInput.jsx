@@ -1,54 +1,51 @@
 import React, { useEffect } from 'react'
-import { IconButton, TextField, Typography } from '@mui/material'
+import { IconButton, TextField, Typography, Snackbar, Alert } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import './components.css'
 import { useState } from 'react';
 import axios from 'axios';
 
-
 const TaskInput = () => {
     const [taskArray, setTask] = useState([]);
-    const [dummy, setDummy] = useState('')
-
+    const [dummy, setDummy] = useState('');
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [serverity, setServerity] = useState('');
     const handleClick = async () => {
-        let config = {
-            url: 'http://localhost:8080/create',
-            method: 'post',
-            data: {
-                id: 1,
-                userName: 'shivamasd',
-                emailId: 'apj@gmail.com',
-            }
-        }
-        let response = await axios(config).then((res) => {
-            console.log(res);
-        }).catch((err) => {
-            console.log(err)
-        })
-        console.log(response)
         if (dummy) {
-            if (taskArray.includes(dummy))
-                window.alert('This task is already added!')
+            if (taskArray.includes(dummy)) {
+                setServerity('warning')
+                setMessage('This task already exists');
+                setOpen(true);
+            }
             else {
                 setTask(prevTask => [...taskArray, dummy])
-                setDummy('')
+                setServerity('success')
+                setMessage('Task added successfully!');
+                setOpen(true);
             }
         }
-
-        else
-            window.alert('Please enter a task first!');
-
+        else {
+            setOpen(true);
+            setServerity('warning')
+            setMessage('Please enter a task first!');
+        }
     }
 
+    const handleSnackClose = () => {
+        setOpen(false);
+    }
 
 
     return (
         <>
             <div className='task-input-field'>
                 <section>
-                    <TextField onChange={(e) => {
+                    <TextField value={dummy} onChange={(e) => {
                         if (e.target.value.length)
                             setDummy(e.target.value);
+                        else
+                            setDummy('')
                     }} />
                 </section>
                 <section>
@@ -60,12 +57,24 @@ const TaskInput = () => {
 
             <div className='task-output-field'>
                 {taskArray.map((value) => {
-                    console.log(value);
                     return (
                         <Typography key={value}>{value}</Typography>
                     )
                 })}
             </div>
+
+            <Snackbar
+                open={open}
+                onClose={handleSnackClose}
+                autoHideDuration={3000}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                // key={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert onClose={handleSnackClose} severity={serverity} sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+            </Snackbar>
+
         </>
     )
 }

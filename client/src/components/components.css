@@ -4,6 +4,11 @@
     flex-direction: row;
 }
 
-.task-output-field{
-    
+.navbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+    background-color: rgb(35, 168, 171);
+
 }
