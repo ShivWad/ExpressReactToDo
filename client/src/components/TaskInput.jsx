@@ -23,6 +23,7 @@ const TaskInput = () => {
                 setServerity('success')
                 setMessage('Task added successfully!');
                 setOpen(true);
+                setDummy('');
             }
         }
         else {
@@ -39,6 +40,8 @@ const TaskInput = () => {
 
     return (
         <>
+            <h1>Please enter a task</h1>
+
             <div className='task-input-field'>
                 <section>
                     <TextField value={dummy} onChange={(e) => {
@@ -68,7 +71,7 @@ const TaskInput = () => {
                 onClose={handleSnackClose}
                 autoHideDuration={3000}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                // key={{ vertical: 'bottom', horizontal: 'right' }}
+            // key={{ vertical: 'bottom', horizontal: 'right' }}
             >
                 <Alert onClose={handleSnackClose} severity={serverity} sx={{ width: '100%' }}>
                     {message}
