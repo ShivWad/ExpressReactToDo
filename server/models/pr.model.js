@@ -1,24 +1,74 @@
 const sql = require("./pr.js");
 
 const UserData = function (userData) {
-  this.id = userData.Id;
-  this.userName = userData.userName;
-  this.emailId = userData.emailId;
+  this.taskId = userData.taskId;
+  this.userId = userData.userId;
+  this.taskAct = userData.taskAct;
+  (this.userName = userData.userName),
+    (this.userEmail = userData.userEmail),
+    (this.userPassword = userData.userPassword);
 };
-
-UserData.create = (newUser, res) => {
-  console.log("------------->", newUser.body);
+/**
+ * Creates a new task
+ * @param {*} newTask
+ * @param {*} result
+ */
+UserData.create = (newTask, result) => {
+  console.log("------------->", newTask);
   sql.query(
-    `INSERT INTO userdata (ID, UserName,emailId) VALUES ("${newUser.body.id}", "${newUser.body.userName}","${newUser.body.emailId}")`,
-
+    `INSERT INTO usertasks (UserId, TaskAct) VALUES ("${newTask.userId}","${newTask.taskAct}")`,
+    newTask,
     (err, res) => {
       if (err) {
-        console.log(err);
+        console.log("--->", err);
+        result(err, null);
         return;
       }
-      console.log("created tutorial:", { id: res.userId, ...newUser });
+      console.log("created Task:", { id: res.insertId, ...newTask });
+      result(null, { id: res.insertId, ...newTask });
     }
   );
 };
 
+/**
+ * Query all the tasks with corresponding userID
+ * @param {*} userId
+ * @param {*} result
+ */
+UserData.getTasks = (userId, result) => {
+  sql.query(`Select * FROM usertasks where userId=${userId}`, (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+UserData.deleteTask = (taskId, result) => {
+  sql.query(`DELETE FROM usertasks WHERE taskId=${taskId}`, (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+UserData.createUser = (userData, result) => {
+  console.log("---------->", userData);
+  sql.query(
+    `INSERT INTO userdata (UserName, EmailId, UserPassword) VALUES ("${userData.userName}","${userData.userEmail}",md5("${userData.userPassword}"))`,
+    (err, res) => {
+      console.log("***************", res);
+      if (err) {
+        console.log("--->", err);
+        result(err, null);
+        return;
+      }
+      console.log("created User:", { id: res.userId, ...userData });
+      result(null, { id: res.insertId, ...userData });
+    }
+  );
+};
 module.exports = UserData;

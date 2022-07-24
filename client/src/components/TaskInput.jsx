@@ -10,7 +10,30 @@ const TaskInput = () => {
     const [dummy, setDummy] = useState('');
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
-    const [serverity, setServerity] = useState('');
+    const [serverity, setServerity] = useState('success');
+    const [tasksInDb, setTasksInDb] = useState({})
+
+    const addTaskToDb = async () => {
+        let config = {
+            data: {
+                taskId: 34,
+                userId: 2,
+                taskAct: dummy
+            },
+            url: 'http://localhost:8080/api/tasks/create',
+            method: 'POST'
+
+        }
+
+        let response = await axios(config).then((response) => {
+            console.log(response.data);
+            return response.status;
+        }).catch(err => console.log(err))
+
+
+        return response;
+    }
+
     const handleClick = async () => {
         if (dummy) {
             if (taskArray.includes(dummy)) {
@@ -20,10 +43,18 @@ const TaskInput = () => {
             }
             else {
                 setTask(prevTask => [...taskArray, dummy])
-                setServerity('success')
-                setMessage('Task added successfully!');
-                setOpen(true);
-                setDummy('');
+                let response = await addTaskToDb();
+                if (response === 200) {
+                    setDummy('');
+                    setServerity('success')
+                    setMessage('Task added successfully!');
+                    setOpen(true);
+                }
+                else {
+                    setServerity('error')
+                    setMessage('Having issues at backend');
+                    setOpen(true);
+                }
             }
         }
         else {
@@ -32,6 +63,8 @@ const TaskInput = () => {
             setMessage('Please enter a task first!');
         }
     }
+
+
 
     const handleSnackClose = () => {
         setOpen(false);

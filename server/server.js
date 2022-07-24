@@ -5,7 +5,6 @@ const { create } = require('./controllers/pr.controller');
 // var corsOption = {
 //     origin : 'localhost:3000'
 // };
-const UserData = require('./models/pr.model');
 
 
 app.use(function(req, res, next) {
@@ -24,7 +23,8 @@ app.get('/', (req,res)=>{
     res.json({message : 'yooooooooooooooo'})
 })
 
-app.post('/create',UserData.create)
+
+require("./routes/pr.routes.js")(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

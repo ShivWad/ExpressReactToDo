@@ -8,8 +8,8 @@ const App = () => {
     <>
       <NavBar />
       <Routes>
+        <Route path="/" element={<h1>Hello</h1>} />
         <Route path="signup" element={<NewUser />} />
-        <Route path="/" element={<h1>dasdsadad</h1>} />
         <Route path="create" element={<TaskInput />} />
       </Routes>
     </>
