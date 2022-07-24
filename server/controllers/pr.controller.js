@@ -11,15 +11,11 @@ exports.create = (req, res) => {
     userId: req.body.userId,
     taskAct: req.body.taskAct,
   });
-
-  console.log("----:>", newTask);
   UserData.create(newTask, (err, data) => {
-
-    console.log("DATAA", data)
     if (err) {
-      res.status(500).send({
+      res.status(err.status).send({
         message:
-          err.message || "Some error occurred while creating the Tutorial.",
+          err.err.message || "Some error occurred while creating the Tutorial.",
       });
     } else res.send(data);
   });
@@ -69,7 +65,6 @@ exports.deleteTask = (req, res) => {
   });
 };
 
-
 exports.createUser = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -84,19 +79,37 @@ exports.createUser = (req, res) => {
 
   UserData.createUser(newUser, (err, data) => {
     if (err) {
-      res.status(500).send({
+      res.status(err.status).send({
         message:
-          err.message || "Some error occurred while creating the Tutorial.",
+          err.err.message || "Some error occurred while creating the Tutorial.",
       });
     } else res.send(data);
   });
 };
 
-exports.findOne = (res, req) => {};
+exports.loginUser = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+  }
+  const userLogin = new UserData({
+    userEmail: req.body.userEmail,
+  });
+
+  UserData.loginUser(userLogin, (err, data) => {
+    if (err) {
+      res.status(err.status).send({
+        message:
+          err.err.message || "Some error occurred while creating the Tutorial.",
+      });
+    } else res.send(data);
+  });
+};
+
+exports.findOne = (req, res) => {};
 exports.update = (req, res) => {};
 
 exports.deleteAll = (req, res) => {};
 
 exports.findAllPublished = (req, res) => {};
-
-

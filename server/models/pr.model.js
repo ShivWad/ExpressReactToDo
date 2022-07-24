@@ -1,4 +1,5 @@
 const sql = require("./pr.js");
+const jwt = require("jsonwebtoken");
 
 const UserData = function (userData) {
   this.taskId = userData.taskId;
@@ -20,8 +21,9 @@ UserData.create = (newTask, result) => {
     newTask,
     (err, res) => {
       if (err) {
-        console.log("--->", err);
-        result(err, null);
+        if (err.code === "ER_DUP_ENTRY") {
+          result({ err: err, status: 409 }, null);
+        } else result({ err: err, status: 500 }, null);
         return;
       }
       console.log("created Task:", { id: res.insertId, ...newTask });
@@ -58,16 +60,27 @@ UserData.deleteTask = (taskId, result) => {
 UserData.createUser = (userData, result) => {
   console.log("---------->", userData);
   sql.query(
-    `INSERT INTO userdata (UserName, EmailId, UserPassword) VALUES ("${userData.userName}","${userData.userEmail}",md5("${userData.userPassword}"))`,
+    `INSERT INTO userdata (UserName, EmailId, UserPassword) VALUES ("${userData.userName}",LOWER("${userData.userEmail}"),md5("${userData.userPassword}"))`,
     (err, res) => {
-      console.log("***************", res);
       if (err) {
-        console.log("--->", err);
-        result(err, null);
+        if (err.code === "ER_DUP_ENTRY") {
+          result({ err: err, status: 409 }, null);
+        } else result({ err: err, status: 500 }, null);
         return;
       }
       console.log("created User:", { id: res.userId, ...userData });
       result(null, { id: res.insertId, ...userData });
+    }
+  );
+};
+
+UserData.loginUser = (userData, result) => {
+  sql.query(
+    `SELECT * RESULT FROM userdata WHERE EmailId=${userData.userEmail}`,
+    (err, res) => {
+      if (err) {
+        console.log(err);
+      }
     }
   );
 };
