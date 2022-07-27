@@ -60,7 +60,8 @@ UserData.deleteTask = (taskId, result) => {
 UserData.createUser = (userData, result) => {
   console.log("---------->", userData);
   sql.query(
-    `INSERT INTO userdata (UserName, EmailId, UserPassword) VALUES ("${userData.userName}",LOWER("${userData.userEmail}"),md5("${userData.userPassword}"))`,
+    `INSERT INTO userdata (UserName, EmailId, UserPassword) VALUES 
+    ("${userData.userName}",LOWER("${userData.userEmail}"),md5("${userData.userPassword}"))`,
     (err, res) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {
@@ -75,11 +76,22 @@ UserData.createUser = (userData, result) => {
 };
 
 UserData.loginUser = (userData, result) => {
+  console.log("------------>", userData);
   sql.query(
-    `SELECT * RESULT FROM userdata WHERE EmailId=${userData.userEmail}`,
+    `SELECT * FROM userdata WHERE EmailId="${userData.userEmail}"`,
     (err, res) => {
       if (err) {
-        console.log(err);
+        console.log("|---------->", err.message);
+        result(err, null);
+        return;
+      }
+      console.log("---->", res);
+      if (res[0]) {
+        result(null, res);
+        return;
+      } else {
+        result({ err: err, status: 404, message: "user not found" }, null);
+        return;
       }
     }
   );

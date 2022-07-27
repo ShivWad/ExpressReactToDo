@@ -99,10 +99,17 @@ exports.loginUser = (req, res) => {
 
   UserData.loginUser(userLogin, (err, data) => {
     if (err) {
-      res.status(err.status).send({
-        message:
-          err.err.message || "Some error occurred while creating the Tutorial.",
-      });
+      if (err.status) {
+        res.status(err.status).send({
+          message:
+            err.message || "Some error occurred while creating the Tutorial.",
+        });
+      } else
+        res.status(err.status).send({
+          message:
+            err.err.message ||
+            "Some error occurred while creating the Tutorial.",
+        });
     } else res.send(data);
   });
 };
