@@ -2,8 +2,12 @@ import { TextField, Button, Alert, Snackbar } from '@mui/material'
 import axios from 'axios'
 import React from 'react'
 import { useState, useEffect } from 'react'
+import PocketBase from 'pocketbase';
 
-const createUserUrl = "http://localhost:8080/api/user/createUser"
+const pbUrl = 'http://127.0.0.1:8090'
+const pb = new PocketBase(pbUrl);
+
+// example create data
 
 const NewUser = (props) => {
   const [userInfo, setUserInfo] = useState({
@@ -11,6 +15,14 @@ const NewUser = (props) => {
     userEmail: '',
     userPassword: ''
   });
+
+  const [confirmPass, setConfirmPass] = useState('')
+
+
+
+  // const createUserUrl = "http://localhost:8080/api/user/createUser"
+
+
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [serverity, setServerity] = useState('success');
@@ -31,45 +43,92 @@ const NewUser = (props) => {
   // userInfo.userName.length,
   // userInfo.emailId.length])
 
+  const data = {
+    "username": userInfo.userName,
+    "email": userInfo.userEmail,
+    "emailVisibility": true,
+    "password": userInfo.userPassword,
+    "passwordConfirm": confirmPass,
+    "name": userInfo.userName,
+    "verified": true
+  };
+
+
+  console.log(">>>>", data);
 
   const handleSubmit = async () => {
     // const
     if (userInfo.userName.length > 0 && userInfo.userEmail.length > 0 && userInfo.userPassword.length > 0) {
-      console.log(userInfo);
-      let config = {
-        url: createUserUrl,
-        method: 'POST',
-        data: userInfo
+      if (userInfo.userPassword !== confirmPass) {
+        setMessage('Password not same!');
+        setOpen(true);
+        setServerity('warning');
+        return;
       }
 
-      let response = await axios(config)
-        .then((response) => {
-          console.log("---->", response.data)
-          return response
-        }).catch((err) => {
-          console.log("--->", err.response)
-          return err.response
-        })
+      // let config = {
+      //   url: createUserUrl,
+      //   method: 'POST',
+      //   data: userInfo
+      // }
 
-      console.log("===========>", response)
-      if (response.status == 409) {
-        setOpen(true)
-        setServerity('warning')
-        setMessage('This user already exists! Please use a different Email');
-      }
 
-      if (response.status == 500) {
-        setOpen(true)
-        setServerity('warning')
-        setMessage('We are facing some issue at backend');
-      }
-      if (response.status == 200) {
-        setOpen(true)
-        setServerity('success')
-        setMessage('Account created! Please log in to create Tasks!');
-        // Simulate an HTTP redirect:
-        props.handleLogIn(true)
-      }
+      const data = {
+        "username": userInfo.userName,
+        "email": userInfo.userEmail,
+        "emailVisibility": true,
+        "password": userInfo.userPassword,
+        "passwordConfirm": confirmPass,
+        "name": userInfo.userName,
+      };
+
+
+      // console.log(">>>>", data);
+      // let config = {
+      //   url: `${pbUrl}/api/collections/users/records`,
+      //   body: JSON.stringify(data),
+      //   method: 'POST',
+      //   "headers": {
+      //     'Content-Type': 'application/json'
+      //   },
+      // };
+
+      // let record = await axios(config);
+      const record = await pb.collection('users').create(data);
+      
+      // (optional) send an email verification request
+      // await pb.collection('users').requestVerification('test@example.com');
+
+      // let response = await axios(config)
+      //   .then((response) => {
+      //     console.log("---->", response.data)
+      //     return response
+      //   }).catch((err) => {
+      //     console.log("--->", err.response)
+      //     return err.response
+      //   })
+
+      // console.log("===========>", response)
+      // if (response.status == 409) {
+      //   setOpen(true)
+      //   setServerity('warning')
+      //   setMessage('This user already exists! Please use a different Email');
+      // }
+
+      // if (response.status == 500) {
+      //   setOpen(true)
+      //   setServerity('warning')
+      //   setMessage('We are facing some issue at backend');
+      // }
+      // if (response.status == 200) {
+      //   setOpen(true)
+      //   setServerity('success')
+      //   setMessage('Account created! Please log in to create Tasks!');
+      //   // Simulate an HTTP redirect:
+      //   props.handleLogIn(true)
+
+      //   localStorage.setItem('userId', response.data.id);
+      // }
     }
 
     else {
@@ -100,6 +159,10 @@ const NewUser = (props) => {
         <TextField className='text-field-custom' type='password'
           label='Password' onChange={(e) => {
             setUserInfo(prevState => ({ ...userInfo, userPassword: e.target.value }))
+          }} />
+        <TextField className='text-field-custom' type='password'
+          label='Confirm Password' onChange={(e) => {
+            setConfirmPass(e.target.value);
           }} />
 
         <Button

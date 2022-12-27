@@ -16,7 +16,11 @@ const App = () => {
   let navigate = useNavigate();
   
   useEffect(() => {
-    navigate("/login");
+    console.log('yooooo')
+    if(loggedIn){
+        navigate("/login");
+    }
+    
   }, [loggedIn]);
 
   return (

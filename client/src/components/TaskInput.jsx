@@ -4,6 +4,14 @@ import AddIcon from '@mui/icons-material/Add';
 import './components.css'
 import { useState } from 'react';
 import axios from 'axios';
+import PocketBase from 'pocketbase';
+
+
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+
+
+// example create data
 
 const TaskInput = () => {
     const [taskArray, setTask] = useState([]);
@@ -14,24 +22,35 @@ const TaskInput = () => {
     const [tasksInDb, setTasksInDb] = useState({})
 
     const addTaskToDb = async () => {
-        let config = {
-            data: {
-                taskId: 34,
-                userId: 2,
-                taskAct: dummy
-            },
-            url: 'http://localhost:8080/api/tasks/create',
-            method: 'POST'
-
-        }
-
-        let response = await axios(config).then((response) => {
-            console.log(response.data);
-            return response.status;
-        }).catch(err => console.log(err))
 
 
-        return response;
+        const data = {
+            "userId": localStorage.getItem('userId'),
+            "taskAct": dummy
+        };
+        
+        
+        const record = await pb.collection('userTasks').create(data);
+        console.log(record)
+        
+        // let config = {
+        //     data: {
+        //         taskId: 34,
+        //         userId: 2,
+        //         taskAct: dummy
+        //     },
+        //     url: 'http://localhost:8080/api/tasks/create',
+        //     method: 'POST'
+
+        // }
+
+        // let response = await axios(config).then((response) => {
+        //     console.log(response.data);
+        //     return response.status;
+        // }).catch(err => console.log(err))
+
+
+        return record;
     }
 
     const handleClick = async () => {
@@ -44,17 +63,17 @@ const TaskInput = () => {
             else {
                 setTask(prevTask => [...taskArray, dummy])
                 let response = await addTaskToDb();
-                if (response === 200) {
-                    setDummy('');
-                    setServerity('success')
-                    setMessage('Task added successfully!');
-                    setOpen(true);
-                }
-                else {
-                    setServerity('error')
-                    setMessage('Having issues at backend');
-                    setOpen(true);
-                }
+                // if (response === 200) {
+                //     setDummy('');
+                //     setServerity('success')
+                //     setMessage('Task added successfully!');
+                //     setOpen(true);
+                // }
+                // else {
+                //     setServerity('error')
+                //     setMessage('Having issues at backend');
+                //     setOpen(true);
+                // }
             }
         }
         else {
