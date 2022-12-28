@@ -1,15 +1,16 @@
 import { TextField, Button, Alert, Snackbar } from '@mui/material'
-import axios from 'axios'
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import PocketBase from 'pocketbase';
+import { useNavigate } from 'react-router-dom';
 
-const pbUrl = 'http://127.0.0.1:8090'
+const pbUrl =  process.env.REACT_APP_PB_URL;
+
 const pb = new PocketBase(pbUrl);
 
-// example create data
 
-const NewUser = (props) => {
+const NewUser = () => {
+const navigator = useNavigate();
   const [userInfo, setUserInfo] = useState({
     userName: '',
     userEmail: '',
@@ -17,24 +18,9 @@ const NewUser = (props) => {
   });
 
   const [confirmPass, setConfirmPass] = useState('')
-
-
-
-  // const createUserUrl = "http://localhost:8080/api/user/createUser"
-
-
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [serverity, setServerity] = useState('success');
-
-  // const [errorObj, setErrorObj] = useState({
-  //   userNameErr: false,
-  //   emailIdErr: false,
-  //   userPasswordErr: false
-  // });
-
-
-
   const handleSnackClose = () => {
     setOpen(false);
   }
@@ -94,8 +80,15 @@ const NewUser = (props) => {
       // };
 
       // let record = await axios(config);
-      const record = await pb.collection('users').create(data);
+      try {
+        const record = await pb.collection('users').create(data);
+        navigator('/login')
+      } catch (error) {
+        
+      }
       
+
+
       // (optional) send an email verification request
       // await pb.collection('users').requestVerification('test@example.com');
 

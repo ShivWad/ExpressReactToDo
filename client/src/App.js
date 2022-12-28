@@ -9,26 +9,27 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState('');
-  const handleLogIn = (value) => {
-    setLoggedIn(value);
-  };
-  let navigate = useNavigate();
+  // const [loggedIn, setLoggedIn] = useState('');
+  // const handleLogIn = (value) => {
+  //   setLoggedIn(value);
+  // };
+
   
-  useEffect(() => {
-    console.log('yooooo')
-    if(loggedIn){
-        navigate("/login");
-    }
+  // let navigate = useNavigate();
+  
+  // useEffect(() => {
+  //   if(){
+  //       navigate("/create");
+  //   }
     
-  }, [loggedIn]);
+  // }, [loggedIn]);
 
   return (
     <>
       {/* <BrowserRouter> */}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<NewUser handleLogIn={handleLogIn} />} />
+        <Route path="/signup" element={<NewUser  />} />
         <Route path="/create" element={<TaskInput />} />
         <Route path="/login" element={<LoginUser />} />
         <Route path="*" element={<Navigate to="/" replace />} />
