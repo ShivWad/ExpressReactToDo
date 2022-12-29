@@ -1,35 +1,112 @@
-.task-input-field {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
+:root {
+    --black: #000000;
+    --white: #ffffff;
+    --blackHover: rgba(00, 00, 00, 0.8)
 }
 
-.navbar {
+
+/* .navbar {
     display: flex;
     align-items: center;
     justify-content: space-around;
     flex-direction: row;
     background-color: #068282;
-
-}
+} */
 
 .signup-dialog {
     display: flex;
-    width: 50%;
     border: solid;
     border-radius: 10%;
-    border-width: thin;
-    border-color: #339e66;
-    background-color: white;
+    border-width: thick;
+    border-color: var(--black);
+    background-color: var(--white);
     justify-content: center;
     align-content: center;
     padding: 1%;
     flex-direction: column;
-    position: absolute;
     margin: auto;
+}
+
+.signup-dialog .MuiButton-root {
+    margin: auto;
+    margin-top: 3%;
+    background-color: var(--black);
+}
+
+.signup-dialog .MuiButton-root:hover {
+    background-color: var(--blackHover);
 }
 
 .signup-dialog .text-field-custom {
     margin: 2%;
     background-color: white;
 }
+
+
+.side-bar-container {
+    background-color: black;
+    width: fit-content;
+    height: 100vh;
+}
+
+.side-bar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+}
+
+
+.task-container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+
+.task-input-field {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.task-input-field .text-field-custom {
+    width: 65vw;
+}
+
+.task-output-field {
+    margin: auto;
+    width: 60vw;
+    height: 80vh;
+    overflow: auto;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.task-output-field::-webkit-scrollbar {
+    width: 20px;
+}
+
+
+.task-output-field::-webkit-scrollbar-track {
+    /* background: white; */
+      background-color: transparent;
+}
+
+.task-output-field::-webkit-scrollbar-thumb {
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+
+}
+.task-item-container{
+    overflow-wrap:anywhere;
+}
+
+
+

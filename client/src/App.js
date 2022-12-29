@@ -1,39 +1,51 @@
 import "./App.css";
-import NavBar from "./components/NavBar";
+// import NavBar from "./components/NavBar";
 import TaskInput from "./components/TaskInput";
-import { Routes, Route, Link, BrowserRouter, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import NewUser from "./components/NewUser";
 import LoginUser from "./components/LoginUser";
-import Home from "./components/Home";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import SideBar from "./components/SideBar";
+import { useSelector } from "react-redux";
 
 const App = () => {
+  const { isValid } = useSelector((state) => state.user);
+
   // const [loggedIn, setLoggedIn] = useState('');
   // const handleLogIn = (value) => {
   //   setLoggedIn(value);
   // };
 
-  
   // let navigate = useNavigate();
-  
+
   // useEffect(() => {
   //   if(){
   //       navigate("/create");
   //   }
-    
+
   // }, [loggedIn]);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isValid) navigate("/create");
+  }, []);
 
   return (
     <>
       {/* <BrowserRouter> */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<NewUser  />} />
-        <Route path="/create" element={<TaskInput />} />
-        <Route path="/login" element={<LoginUser />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+
+      <div className="main-container">
+        <SideBar />
+
+        <Routes>
+          {/* <Route path="/" element={<Home />} /> */}
+          <Route path="/signup" element={<NewUser />} />
+          <Route path="/create" element={<TaskInput />} />
+          <Route path="/login" element={<LoginUser />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
       {/* </BrowserRouter> */}
     </>
   );

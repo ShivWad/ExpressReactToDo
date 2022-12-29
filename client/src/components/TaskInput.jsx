@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { IconButton, TextField, Typography, Snackbar, Alert, Dialog, DialogContent } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './components.css'
 import { useState } from 'react';
 import PocketBase from 'pocketbase';
@@ -16,9 +17,8 @@ const pb = new PocketBase(pbUrl);
 
 const TaskInput = () => {
 
-    const { userName, isValid, userId } = useSelector(state => state.user)
+    const { isValid, userId } = useSelector(state => state.user)
     // console.log("TEST>>>>>>>>>>>>>>>", userName, isValid, userId)
-    const navigate = useNavigate();
 
     // useEffect(() => {
     //     // navigate('/login')
@@ -54,29 +54,40 @@ const TaskInput = () => {
                     filter: `userId = "${userId}"`,
                     expand: 'users'
                 });
-
-                console.log(resultList);
                 setTaskArray(resultList.items);
             } catch (error) {
-
             }
         }
 
         fetchData();
 
 
-        pb.collection('userTasks').subscribe('*', (e) => {
+        pb.collection('userTasks').subscribe('*', async (e) => {
             if (e.action === 'create') {
                 setTaskArray((prev) => [...prev, e.record]);
             }
+
+            if (e.action === 'delete') {
+                // let newTask = taskArray;
+
+                // newTask = newTask.filter(task=>task.id==e.record.id);
+                const resultList = await pb.collection('userTasks').getList(1, 50, {
+                    sort: 'created',
+                    filter: `userId = "${userId}"`,
+                    expand: 'users'
+                });
+                setTaskArray(resultList.items);
+            }
         })
 
-
-        return function cleanup() {
-            pb.collection('userTasks').unsubscribe();
+        return async function cleanup() {
+            try {
+                await pb.collection('userTasks').unsubscribe('*');
+            } catch (error) {
+                console.log(error)
+            }
         };
-    }
-        , []);
+    }, []);
 
 
     // useEffect(() => {
@@ -99,7 +110,7 @@ const TaskInput = () => {
         return record;
     }
 
-    const handleClick = async () => {
+    const handleAddTask = async () => {
         if (dummy.length > 0) {
             try {
                 await addTaskToDb();
@@ -129,7 +140,10 @@ const TaskInput = () => {
         }
     }
 
-
+    const handleDelete = async (taskId) => {
+        console.log('prameter>>>>>', taskId)
+        const record = await pb.collection('userTasks').delete(taskId);
+    }
 
 
 
@@ -141,37 +155,45 @@ const TaskInput = () => {
     return (
         <>
             {isValid ? <>
-                <h1>Please enter a task</h1>
 
-                <div className='task-input-field'>
-                    <section>
-                        <TextField value={dummy} onChange={(e) => {
+                <h1>Enter a task</h1>
+                <br />
+                <div className="task-container">
+                    <div className='task-input-field'>
+
+                        <TextField className='text-field-custom' value={dummy} onChange={(e) => {
                             if (e.target.value.length)
                                 setDummy(e.target.value);
                             else
                                 setDummy('')
                         }} />
-                    </section>
-                    <section>
-                        <IconButton onClick={() => handleClick()}>
+                        <IconButton onClick={() => handleAddTask()}>
                             <AddIcon />
                         </IconButton>
-                    </section>
-                </div>
+                    </div>
 
-                <div className='task-output-field'>
-                    {taskArray.map((value) => {
-                        return (
-                            <Typography key={value.id}>{value.taskAct}</Typography>
-                        )
-                    })}
+                    <div className='task-output-field'>
+                        {taskArray.map((value) => {
+                            return (
+                                <div className='task-item-container' key={value.id}>
+                                    <div className="task-item">
+                                        <Typography className='task-text'>{value.taskAct}</Typography>
+                                        <IconButton onClick={() => { handleDelete(value.id) }}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </div>
+                                    <hr />
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
 
                 <Snackbar
                     open={open}
                     onClose={handleSnackClose}
                     autoHideDuration={3000}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 // key={{ vertical: 'bottom', horizontal: 'right' }}
                 >
                     <Alert onClose={handleSnackClose} severity={serverity} sx={{ width: '100%' }}>
