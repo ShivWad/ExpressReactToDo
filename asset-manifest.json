@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/ToDo-react-pocketbase/static/css/main.cda138c3.css",
-    "main.js": "/ToDo-react-pocketbase/static/js/main.fe569acb.js",
+    "main.js": "/ToDo-react-pocketbase/static/js/main.b020dd44.js",
     "index.html": "/ToDo-react-pocketbase/index.html",
     "main.cda138c3.css.map": "/ToDo-react-pocketbase/static/css/main.cda138c3.css.map",
-    "main.fe569acb.js.map": "/ToDo-react-pocketbase/static/js/main.fe569acb.js.map"
+    "main.b020dd44.js.map": "/ToDo-react-pocketbase/static/js/main.b020dd44.js.map"
   },
   "entrypoints": [
     "static/css/main.cda138c3.css",
-    "static/js/main.fe569acb.js"
+    "static/js/main.b020dd44.js"
   ]
 }
