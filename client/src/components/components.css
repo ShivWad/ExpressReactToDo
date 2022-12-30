@@ -13,18 +13,19 @@
     background-color: #068282;
 } */
 
+
 .signup-dialog {
     display: flex;
     border: solid;
-    border-radius: 10%;
     border-width: thick;
     border-color: var(--black);
+    border-radius: 2%;
     background-color: var(--white);
     justify-content: center;
     align-content: center;
-    padding: 1%;
+    padding: 5%;
     flex-direction: column;
-    margin: auto;
+    width: 50vw;
 }
 
 .signup-dialog .MuiButton-root {
@@ -76,7 +77,7 @@
 .task-output-field {
     margin: auto;
     width: 60vw;
-    height: 80vh;
+    height: 60vh;
     overflow: auto;
 }
 

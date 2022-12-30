@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Snackbar, Alert } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import PocketBase from 'pocketbase';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,70 +10,98 @@ const pbUrl = process.env.REACT_APP_PB_URL;
 const pb = new PocketBase(pbUrl);
 
 
-console.log(pbUrl)
-
-
 
 const LoginUser = () => {
   const [userInfo, setUserInfo] = useState({
-    userName: null,
-    emailId: null,
-    userPassword: null
+    userName: '',
+    emailId: '',
+    userPassword: ''
   });
   const { userName, isValid } = useSelector(state => state.user)
   const navigate = useNavigate();
 
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
 
-  console.log("TEST>>>>>>>>>>>>>>>", userName, isValid)
-  console.log(userInfo)
 
   const dispatch = useDispatch();
 
-  const handleClick = async () => {
-    const authData = await pb.collection('users').authWithPassword(
-      userInfo.emailId,
-      userInfo.userPassword,
-    );
+
+  const handleSnackClose = () => {
+    setOpen(false);
+  }
 
 
+  const handleLogIn = async () => {
 
-    console.log(">>>>>>", authData);
+    if(userInfo.emailId.length>0 && userInfo.userPassword.length > 0){
 
-
-
-    // after the above you can also access the auth data from the authStore
-    // console.log(pb.authStore.isValid);
-    // console.log(pb.authStore.token);
-    // console.log(pb.authStore.model.id);
-    // "logout" the last authenticated account
-    if (pb.authStore.token) {
-
-      dispatch(login({
-        userName: authData.record.name,
-        emailId: userInfo.emailId,
-        isValid: pb.authStore.isValid,
-        userId: authData.record.id
-      }));
-      // localStorage.setItem('authDataToken', pb.authStore.token);
-      // localStorage.setItem('isValid', pb.authStore.isValid);
-      // localStorage.setItem('userId', pb.authStore.model.id)
-      navigate('/create');
+      try {
+        const authData = await pb.collection('users').authWithPassword(
+        userInfo.emailId,
+        userInfo.userPassword,
+      );
+      if (pb.authStore.token) {
+        dispatch(login({
+          userName: authData.record.name,
+          emailId: userInfo.emailId,
+          isValid: pb.authStore.isValid,
+          userId: authData.record.id
+        }));
+        // localStorage.setItem('authDataToken', pb.authStore.token);
+        // localStorage.setItem('isValid', pb.authStore.isValid);
+        // localStorage.setItem('userId', pb.authStore.model.id)
+        navigate('/create');
+      }
+    } catch (error) {
+      setMessage(error.data.message);
+      setOpen(true);
     }
   }
 
-  return (
-    <div className="signup-dialog">
-      <TextField className='text-field-custom'
-        label='Email Id' onChange={(e) => {
-          setUserInfo(prevState => ({ ...userInfo, emailId: e.target.value }))
-        }} />
-      <TextField className='text-field-custom' type='password'
-        label='Password' onChange={(e) => {
-          setUserInfo(prevState => ({ ...userInfo, userPassword: e.target.value }))
-        }} />
+  else{
+    setMessage('Please enter all the details');
+    setOpen(true);
+  }
+  }
 
-      <Button variant="contained" onClick={() => handleClick()}>Log In</Button>
-    </div>
+
+  const redirectToSignUp = () => {
+    navigate('/signup');
+  }
+
+
+  return (
+    <>
+      <div className="signup-dialog">
+        <TextField className='text-field-custom'
+          label='Email Id' onChange={(e) => {
+            setUserInfo(prevState => ({ ...userInfo, emailId: e.target.value }))
+          }} />
+        <TextField className='text-field-custom' type='password'
+          label='Password' onChange={(e) => {
+            setUserInfo(prevState => ({ ...userInfo, userPassword: e.target.value }))
+          }} />
+
+        <Button variant="contained" onClick={() => handleLogIn()}>Log In</Button>
+        <Button variant="contained" onClick={() => redirectToSignUp()}>New User?</Button>
+
+      </div>
+
+      <Snackbar
+        open={open}
+        onClose={handleSnackClose}
+        autoHideDuration={3000}
+        // anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      // key={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleSnackClose} severity='warning' sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
 

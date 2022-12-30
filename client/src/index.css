@@ -19,3 +19,7 @@ code {
   flex-direction: row;
   gap: 1%;
 }
+
+.not-sidebar{
+  margin: auto;
+}

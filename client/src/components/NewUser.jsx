@@ -4,13 +4,13 @@ import { useState } from 'react'
 import PocketBase from 'pocketbase';
 import { useNavigate } from 'react-router-dom';
 
-const pbUrl =  process.env.REACT_APP_PB_URL;
+const pbUrl = process.env.REACT_APP_PB_URL;
 
 const pb = new PocketBase(pbUrl);
 
 
 const NewUser = () => {
-const navigator = useNavigate();
+  const navigator = useNavigate();
   const [userInfo, setUserInfo] = useState({
     userName: '',
     userEmail: '',
@@ -40,7 +40,6 @@ const navigator = useNavigate();
   };
 
 
-  console.log(">>>>", data);
 
   const handleSubmit = async () => {
     // const
@@ -84,9 +83,16 @@ const navigator = useNavigate();
         const record = await pb.collection('users').create(data);
         navigator('/login')
       } catch (error) {
-        
+
+        if (error.data.data?.email)
+          setMessage(error.data.data.email.message);
+        else if (error.data.data?.username)
+          setMessage(error.data.data.username.message);
+
+        setServerity('warning');
+        setOpen(true);
       }
-      
+
 
 
       // (optional) send an email verification request
@@ -166,12 +172,21 @@ const navigator = useNavigate();
         </Button>
 
 
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={() => navigator('/login')}>
+          Already a user?
+        </Button>
+
       </div>
       <Snackbar
         open={open}
         onClose={handleSnackClose}
         autoHideDuration={3000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        // anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+
       // key={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Alert onClose={handleSnackClose} severity={serverity} sx={{ width: '100%' }}>

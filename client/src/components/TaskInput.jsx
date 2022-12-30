@@ -17,13 +17,7 @@ const pb = new PocketBase(pbUrl);
 
 const TaskInput = () => {
 
-    const { isValid, userId } = useSelector(state => state.user)
-    // console.log("TEST>>>>>>>>>>>>>>>", userName, isValid, userId)
-
-    // useEffect(() => {
-    //     // navigate('/login')
-    // }, [])
-
+    const { isValid, userId, userName } = useSelector(state => state.user);
 
     const [taskArray, setTaskArray] = useState([]);
     const [dummy, setDummy] = useState('');
@@ -31,22 +25,20 @@ const TaskInput = () => {
     const [message, setMessage] = useState('');
     const [serverity, setServerity] = useState('success');
     // const [timer, setTimer] = useState(5);
-
-    // useEffect(() => {
-    //     if (!isValid) {
-
-    //         // let timerInterval = setInterval(() => {
-    //         //     setTimer((prev) => prev - 1);
-    //         // }, 1000)
-    //         // if(timer<1)
-    //         // setInterval(timerInterval);
-    //     }
-    // }, [isValid]);
-
-
-
+    const [greeting, setGreeting] = useState('');
 
     useEffect(() => {
+
+        let today = new Date()
+        let curHr = today.getHours()
+        if (curHr < 12) {
+            setGreeting('Good Morning 🌤️')
+        } else if (curHr < 16) {
+            setGreeting('Good Afternoon 🌇')
+        } else {
+            setGreeting('Good Evening 🌃')
+        }
+
         async function fetchData() {
             try {
                 const resultList = await pb.collection('userTasks').getList(1, 50, {
@@ -57,9 +49,12 @@ const TaskInput = () => {
                 setTaskArray(resultList.items);
             } catch (error) {
             }
+
+
         }
 
         fetchData();
+
 
 
         pb.collection('userTasks').subscribe('*', async (e) => {
@@ -80,11 +75,15 @@ const TaskInput = () => {
             }
         })
 
+
+
+
+
         return async function cleanup() {
             try {
                 await pb.collection('userTasks').unsubscribe('*');
             } catch (error) {
-                console.log(error)
+                console.log(error.data)
             }
         };
     }, []);
@@ -141,7 +140,6 @@ const TaskInput = () => {
     }
 
     const handleDelete = async (taskId) => {
-        console.log('prameter>>>>>', taskId)
         const record = await pb.collection('userTasks').delete(taskId);
     }
 
@@ -154,14 +152,29 @@ const TaskInput = () => {
 
     return (
         <>
+
+
             {isValid ? <>
 
-                <h1>Enter a task</h1>
+                <div className='greeting'>
+                    <h1>{greeting},      {userName}</h1>
+                </div>
+
                 <br />
                 <div className="task-container">
+                    <h3>Enter a task</h3>
                     <div className='task-input-field'>
 
-                        <TextField className='text-field-custom' value={dummy} onChange={(e) => {
+                        <TextField onKeyUp={(e) => {
+                            if (e.key == 'Enter') {
+                                if (e.target.value.length) {
+                                    setDummy(e.target.value);
+                                }
+                                else
+                                    setDummy('')
+                                handleAddTask();
+                            }
+                        }} className='text-field-custom' value={dummy} onChange={(e) => {
                             if (e.target.value.length)
                                 setDummy(e.target.value);
                             else
@@ -208,14 +221,9 @@ const TaskInput = () => {
                         <h2>
                             Please <a href='/login' >login</a> first!
                         </h2>
-
                         {/* <h5>Redirecting to login page in {timer}</h5> */}
-
                     </DialogContent>
                 </Dialog>
-
-
-
             }
 
 
